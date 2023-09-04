@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddAddressScreen = ({ navigation }) => {
@@ -16,16 +16,15 @@ const AddAddressScreen = ({ navigation }) => {
         address3,
         address4,
       };
-      await AsyncStorage.setItem('userAddress', JSON.stringify(addressData));
-      setAddress1("")
-      setAddress2("")
-      setAddress3("")
-      setAddress4("")
-      // You can add more logic here, like showing a success message.
-      // Navigate to another screen or perform any additional actions.
+      await AsyncStorage.setItem('userA', JSON.stringify(addressData));
+      Alert.alert('Success', 'Address saved successfully.');
+      setAddress1('');
+      setAddress2('');
+      setAddress3('');
+      setAddress4('');
     } catch (error) {
       console.error('Error saving address:', error);
-      // Handle error, e.g., show an error message to the user.
+      Alert.alert('Error', 'Failed to save address. Please try again.');
     }
   };
 
@@ -56,7 +55,7 @@ const AddAddressScreen = ({ navigation }) => {
         onChangeText={setAddress4}
       />
       <Button title="Save Address" onPress={saveAddress} />
-      <Button title="Saved Address" onPress={()=>navigation.navigate('AddressList')}/>
+      <Button title="View Saved Addresses" onPress={() => navigation.navigate('AddressList')} />
     </View>
   );
 };

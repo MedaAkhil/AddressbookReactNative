@@ -1,27 +1,22 @@
+// AddressListScreen.js
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet,Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const getAddresses = async () => {
-    try {
-      const addressData = await AsyncStorage.getItem('userAddress');
-      if (addressData) {
-        const addresses = JSON.parse(addressData);
-        return addresses;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error retrieving addresses:', error);
-      return null;
-    }
-  };
-const AddressListScreen = ({ navigation }) => {
+
+const AddressListScreen = ({navigation }) => {
   const [addresses, setAddresses] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const savedAddresses = await getAddresses();
-      if (savedAddresses) {
-        setAddresses(savedAddresses);
+      try {
+        const addressesData = await AsyncStorage.getItem('userAddresses');
+        if (addressesData) {
+          const parsedAddresses = JSON.parse(addressesData);
+          setAddresses(parsedAddresses);
+        }
+      } catch (error) {
+        console.error('Error retrieving addresses:', error);
       }
     };
 
@@ -30,32 +25,19 @@ const AddressListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-        <Button title="reload" onPress={getAddresses} />
       <Text style={styles.header}>Saved Addresses</Text>
-      {renderAddresses(addresses)}
-      <Button title="add address" onPress={()=>navigation.navigate("AddAddress")}></Button>
+      <FlatList
+        data={addresses}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.addressContainer}>
+            <Text>{item}</Text>
+          </View>
+        )}
+      />
+      <Button title="Add Address" onPress={() => navigation.navigate('AddAddress')} />
     </View>
   );
-};
-
-const renderAddresses = (addresses) => {
-  const addressComponents = [];
-
-  for (let i = 0; i < addresses.length; i++) {
-    const address = addresses[i];
-    addressComponents.push(
-      <View key={i} style={styles.addressContainer}>
-        <Text>Address {i + 1}:</Text>
-        <Text>{address.address1}</Text>
-        <Text>{address.address2}</Text>
-        <Text>{address.address3}</Text>
-        <Text>{address.address4}</Text>
-      </View>
-    );
-    
-  }
-
-  return addressComponents;
 };
 
 const styles = StyleSheet.create({
@@ -68,7 +50,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   addressContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
   },
 });
 
